@@ -3,13 +3,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>3a494c2d-8782-4807-a66c-f879b6404923</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>Inventory_Profitability_Analyzer.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>Product_Line_Analyzer.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>Inventory_Profitability_Analyzer</Name>
+    <Name>Product_Line_Analyzer</Name>
     <RootNamespace>Inventory_Profitability_Analyzer</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -21,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Inventory_Profitability_Analyzer.py" />
+    <Compile Include="Product_Line_Analyzer.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
