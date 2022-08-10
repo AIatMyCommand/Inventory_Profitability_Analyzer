@@ -436,8 +436,10 @@ def Browse_Items():
             ent_Beginning_INV.delete(0, END)
             ent_Ending_INV.delete(0, END)
             del Item1
-
-        Modify_Command = "Update Product_Lines SET " + +" WHERE ItemID = 0"
+        args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
+                Turnover, Profitability, Physical_Volume.get())
+        Modify_Command = ("Update Product_Lines SET ?, ?, ?, ?, ?, ?, ?",
+                         " WHERE ItemID = 0", args)
         cursor.execute(Modify_Command)
         sqliteConnection.commit()
     def Delete0():
