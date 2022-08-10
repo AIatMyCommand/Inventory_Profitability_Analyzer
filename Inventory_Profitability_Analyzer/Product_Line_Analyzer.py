@@ -236,7 +236,7 @@ def Admin():
     Button(Admin_Screen, text = "Browse Items", width = 10, height = 1, bg = "grey",
         command = Browse_Items).pack()
     Button(Admin_Screen, text = "Search Items", width = 10, height = 1, bg = "grey",
-        command = search_items,).pack()
+        command = Search_Items).pack()
     Button(Admin_Screen, text = "Backup", width = 10, height = 1, bg = "grey",
            command = Backup).pack()
     Button(Admin_Screen, text = "Restore", width = 10, height = 1, bg = "grey",
@@ -388,7 +388,7 @@ def Browse_Items():
     global Browse_Items_Screen
     Admin_Screen.destroy()
     Browse_Items_Screen = Tk()
-    Browse_Items_Screen.geometry("800x650+800+0")
+    Browse_Items_Screen.geometry("900x500+600+0")
     Browse_Items_Screen.title("Browse Items")
     cursor = sqliteConnection.cursor()
     
@@ -473,75 +473,77 @@ def Browse_Items():
     Label(Browse_Items_Screen, text = "     ").grid(row = 8, column = 0)
     #Label(Browse_Items_Screen, text = "").pack
     #headers
-    Label(Browse_Items_Screen, text = "").grid(row = 0, column = 1)
-    Label(Browse_Items_Screen, text = "Item", anchor = "w").grid(row = 1, column = 1)
-    Label(Browse_Items_Screen, text = "Price", justify = LEFT).grid(row = 1, column = 2)
-    Label(Browse_Items_Screen, text = "Cost to Make", justify = LEFT).grid(row = 1, column = 3)
-    Label(Browse_Items_Screen, text = "Cost to Ship", justify = LEFT).grid(row = 1, column = 4)
-    Label(Browse_Items_Screen, text = "Units Sold", justify = LEFT).grid(row = 1, column = 5)
-    Label(Browse_Items_Screen, text = "Beginning INV", justify = LEFT).grid(row = 1, column = 6)
-    Label(Browse_Items_Screen, text = "Ending INV", justify = LEFT).grid(row = 1, column = 7)
-    Label(Browse_Items_Screen, text = "Physical Volume", justify = LEFT).grid(row = 1, column = 8)
+    Label(Browse_Items_Screen, text = "     ").grid(row = 0, column = 1)
+    Label(Browse_Items_Screen, text = "     ").grid(row = 1, column = 1)
+    Label(Browse_Items_Screen, text = "     ").grid(row = 1, column = 2)
+    Label(Browse_Items_Screen, text = "  Item  ", anchor = "w").grid(row = 1, column = 3)
+    Label(Browse_Items_Screen, text = "  Price  ", justify = LEFT).grid(row = 1, column = 4)
+    Label(Browse_Items_Screen, text = "  Cost to Make  ", justify = LEFT).grid(row = 1, column = 5)
+    Label(Browse_Items_Screen, text = "  Cost to Ship  ", justify = LEFT).grid(row = 1, column = 6)
+    Label(Browse_Items_Screen, text = "  Units Sold  ", justify = LEFT).grid(row = 1, column = 7)
+    Label(Browse_Items_Screen, text = "  Beginning INV  ", justify = LEFT).grid(row = 1, column = 8)
+    Label(Browse_Items_Screen, text = "  Ending INV  ", justify = LEFT).grid(row = 1, column = 9)
+    Label(Browse_Items_Screen, text = "  Physical Volume  ", justify = LEFT).grid(row = 1, column = 10)
     #Label(Browse_Items_Screen).grid(row = 0, column = 2)
 
     #rows = cursor.fetchall() <--Do I need this?
     for i in range(10):
-        btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "30", command = Modify0)
+        btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "8", command = Modify0)
         btnModify.grid(row = i + 2, column = 1)
         
-        btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "30", command = Delete0)
+        btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "8", command = Delete0)
         btnDelete.grid(row = i + 2, column = 2)
 
-        ent_ItemD = Entry(Browse_Items_Screen)
+        ent_ItemD = Entry(Browse_Items_Screen, width = "6")
         ent_ItemD.bind()
         ent_ItemD.grid(row = i + 2, column = 3)
         get_ItemD = cursor.execute("SELECT ItemD FROM Product_Lines WHERE ItemID = ?", i)
         ItemD = cursor.execute(get_ItemD)
         ent_ItemD.insert(END, ItemD)
 
-        ent_Price = Entry(Browse_Items_Screen)
+        ent_Price = Entry(Browse_Items_Screen, width = "6")
         ent_Price.bind()
         ent_Price.grid(row = i + 2, column = 3)
         get_Price = cursor.execute("SELECT Price FROM Product_Lines WHERE ItemID = ?", i)
         Price = cursor.execute(get_Price)
         ent_Price.insert(END, Price)
 
-        ent_Cost_to_Make = Entry(Browse_Items_Screen)
+        ent_Cost_to_Make = Entry(Browse_Items_Screen, width = "6")
         ent_Cost_to_Make.bind()
         ent_Cost_to_Make.grid(row = i + 2, column = 4)
         get_Cost_to_Make = cursor.execute("SELECT Cost_to_Make FROM Product_Lines WHERE ItemID = ?", i)
         Cost_to_Make = cursor.execute(get_Cost_to_Make)
         ent_Cost_to_Make.insert(END, Cost_to_Make)
 
-        ent_Cost_to_Ship = Entry(Browse_Items_Screen)
+        ent_Cost_to_Ship = Entry(Browse_Items_Screen, width = "6")
         ent_Cost_to_Ship.bind()
         ent_Cost_to_Ship.grid(row = i + 2, column = 5)
         get_Cost_to_Ship = cursor.execute("SELECT Cost_to_Ship FROM Product_Lines WHERE ItemID = ?", i)
         Cost_to_Ship = cursor.execute(get_Cost_to_Ship)
         ent_Cost_to_Ship.insert(END, Cost_to_Ship)
 
-        ent_Units_Sold = Entry(Browse_Items_Screen)
+        ent_Units_Sold = Entry(Browse_Items_Screen, width = "6")
         ent_Units_Sold.bind()
         ent_Units_Sold.grid(row = i + 2, column = 6)
         get_Units_Sold = cursor.execute("SELECT Units_Sold FROM Product_Lines WHERE ItemID = ?", i)
         Units_Sold = cursor.execute(get_Units_Sold)
         ent_Units_Sold.insert(END, Units_Sold)
 
-        ent_Beginning_INV = Entry(Browse_Items_Screen)
+        ent_Beginning_INV = Entry(Browse_Items_Screen, width = "6")
         ent_Beginning_INV.bind()
         ent_Beginning_INV.grid(row = i + 2, column = 7)
         get_Beginning_INV = cursor.execute("SELECT Beginning_INV FROM Product_Lines WHERE ItemID = ?", i)
         Beginning_INV = cursor.execute(get_Beginning_INV)
         ent_Beginning_INV.insert(END, Beginning_INV)
 
-        ent_Ending_INV = Entry(Browse_Items_Screen)
+        ent_Ending_INV = Entry(Browse_Items_Screen, width = "6")
         ent_Ending_INV.bind()
         ent_Ending_INV.grid(row = i + 2, column = 8)
         get_Ending_INV = cursor.execute("SELECT Ending_INV FROM Product_Lines WHERE ItemID = ?", i)
         Beginning_INV = cursor.execute(get_Ending_INV)
         ent_Ending_INV.insert(END, Beginning_INV)
 
-        ent_Physical_Volume = Entry(Browse_Items_Screen)
+        ent_Physical_Volume = Entry(Browse_Items_Screen, width = "6")
         ent_Physical_Volume.bind()
         ent_Physical_Volume.grid(row = i + 2, column = 9)
         get_Physical_Volume = cursor.execute("SELECT Physical_Volume FROM Product_Lines WHERE ItemID = ?", i)
@@ -553,7 +555,7 @@ def Browse_Items():
         btnBack.grid(row = 11, column = 2)
 
 # Implementing event on search_items button
-def Search():
+def Search_Items():
     global Search_Screen
     Search_Screen = Tk()
     Search_Screen.geometry("400x300+800+0")
