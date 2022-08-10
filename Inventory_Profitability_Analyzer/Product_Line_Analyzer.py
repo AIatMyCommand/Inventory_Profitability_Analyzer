@@ -553,8 +553,41 @@ def Browse_Items():
         btnBack.grid(row = 11, column = 2)
 
 # Implementing event on search_items button
-def search_items():
+def Search():
+    global Search_Screen
+    Search_Screen = Tk()
+    Search_Screen.geometry("400x300+800+0")
+    Search_Screen.title("Search")
+    query = ("SELECT * FROM Product_Lines ORDER BY Profitability, Turnover LIMIT 3")
+    result = cursor.execute(query)
+    i = 0 # row value inside the loop 
+    for item in result:
+        if(i == 0):
+            Label(Search_Screen, text = "     ").grid(row = 0, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 1, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 2, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 3, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 4, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 5, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 6, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 7, column = 0)
+            Label(Search_Screen, text = "     ").grid(row = 8, column = 0)
+            Label(Search_Screen, text = "").grid(row = 0, column = 1)
+            Label(Search_Screen, text = "Item", anchor = "w").grid(row = 1, column = 1)
+            Label(Search_Screen, text = "Price", justify = LEFT).grid(row = 2, column = 1)
+            Label(Search_Screen, text = "Cost to Make", justify = LEFT).grid(row = 3, column = 1)
+            Label(Search_Screen, text = "Cost to Ship", justify = LEFT).grid(row = 4, column = 1)
+            Label(Search_Screen, text = "Units Sold", justify = LEFT).grid(row = 5, column = 1)
+            Label(Search_Screen, text = "Turnover", justify = LEFT).grid(row = 6, column = 1)
+            Label(Search_Screen, text = "Profitability", justify = LEFT).grid(row = 7, column = 1)
+            Label(Search_Screen, text = "Physical Volume", justify = LEFT).grid(row = 8, column = 1)
+        for j in range(len(item)):
+            e = Entry(Search_Screen, width=10, fg = 'black') 
+            e.grid(row = i, column = j) 
+            e.insert(END, item[j])
+        i=i+1
     cursor.close()
+
 
 # Implementing event on Report button
 def Report():
@@ -590,7 +623,8 @@ def Report():
             e.grid(row = i, column = j) 
             e.insert(END, item[j])
         i=i+1
-    cursor.close()    
+
+  
 
 # Implementing event on backup button
 def Backup():
