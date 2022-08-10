@@ -60,7 +60,7 @@ class ItemVar:
             print("Item must be text, units sold must be a whole number and all other fields must be numbers")
         except Exception as e:
             errorbox(e)
-        raise CustomError("Unknown Error")        
+            raise CustomError("Unknown Error")        
             
 # Designing root(first) window
 def Root():
@@ -158,7 +158,6 @@ def Login_Verify():
         else:
             # user_not_found()
             errorbox("User not found")
-            # Note: user enumeration vulnerability
 
 # Designing popup for Login success
 def Login_sucess():
@@ -417,10 +416,14 @@ def Browse_Items():
                 AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
                 Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
-                cursor.execute("INSERT INTO Product_Lines VALUES ?", ent_ItemD.get(),
-                               ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
-                               Turnover, Profitability, Physical_Volume.get())
+                sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
+                args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
+                        Turnover, Profitability, Physical_Volume.get())
+                Modify_Command = ("Update Product_Lines SET ?, ?, ?, ?, ?, ?, ?",
+                         " WHERE ItemID = 0", args)
+                cursor.execute(Modify_Command)
                 sqliteConnection.commit()
+
             # Handle errors
             except sqlite3.Error as error:
                 print("An error occurred - ", error)
@@ -436,12 +439,8 @@ def Browse_Items():
             ent_Beginning_INV.delete(0, END)
             ent_Ending_INV.delete(0, END)
             del Item1
-        args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
-                Turnover, Profitability, Physical_Volume.get())
-        Modify_Command = ("Update Product_Lines SET ?, ?, ?, ?, ?, ?, ?",
-                         " WHERE ItemID = 0", args)
-        cursor.execute(Modify_Command)
-        sqliteConnection.commit()
+
+    #Implementing Delete button click event
     def Delete0():
         Confirmation_Delete = yes_no_box("Are you sure that you want to delete this entry?")
         if(Confirmation_Delete == "yes"):
@@ -559,6 +558,38 @@ def search_items():
 
 # Implementing event on Report button
 def Report():
+    global Report_Screen
+    Report_Screen = Tk()
+    Report_Screen.geometry("400x300+800+0")
+    Report_Screen.title("Report")
+    query = ("SELECT * FROM Product_Lines ORDER BY Profitability, Turnover, DESC")
+    Summary = cursor.execute(query)
+    i = 0 # row value inside the loop 
+    for item in Summary:
+        if(i == 0):
+            Label(Report_Screen, text = "     ").grid(row = 0, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 1, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 2, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 3, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 4, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 5, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 6, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 7, column = 0)
+            Label(Report_Screen, text = "     ").grid(row = 8, column = 0)
+            Label(Report_Screen, text = "").grid(row = 0, column = 1)
+            Label(Report_Screen, text = "Item", anchor = "w").grid(row = 1, column = 1)
+            Label(Report_Screen, text = "Price", justify = LEFT).grid(row = 2, column = 1)
+            Label(Report_Screen, text = "Cost to Make", justify = LEFT).grid(row = 3, column = 1)
+            Label(Report_Screen, text = "Cost to Ship", justify = LEFT).grid(row = 4, column = 1)
+            Label(Report_Screen, text = "Units Sold", justify = LEFT).grid(row = 5, column = 1)
+            Label(Report_Screen, text = "Turnover", justify = LEFT).grid(row = 6, column = 1)
+            Label(Report_Screen, text = "Profitability", justify = LEFT).grid(row = 7, column = 1)
+            Label(Report_Screen, text = "Physical Volume", justify = LEFT).grid(row = 8, column = 1)
+        for j in range(len(item)):
+            e = Entry(Report_Screen, width=10, fg = 'black') 
+            e.grid(row = i, column = j) 
+            e.insert(END, item[j])
+        i=i+1
     cursor.close()    
 
 # Implementing event on backup button
