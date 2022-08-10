@@ -258,6 +258,7 @@ def yes_no_box(msg):
     # This returns a string of yes or no in lower case
     return choice
 
+# Implementing event on Add_Items button
 def Add_Items():
     Admin_Screen.destroy()
     global Add_Items_Screen
@@ -290,9 +291,11 @@ def Add_Items():
                 AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
                 Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
-                cursor.execute("INSERT INTO Product_Lines VALUES ?", ent_ItemD.get(),
-                               ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
-                               Turnover, Profitability, Physical_Volume.get())
+                args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost,
+                               ent_Units_Sold.get(), Turnover, Profitability,
+                               Physical_Volume.get())
+                cursor.execute("INSERT INTO Product_Lines VALUES ?, ?, ?, ?, ?, ?, ?",
+                               args)
                 sqliteConnection.commit()
             # Handle errors
             except sqlite3.Error as error:
@@ -436,11 +439,13 @@ def Browse_Items():
 
         Modify_Command = "Update Product_Lines SET " + +" WHERE ItemID = 0"
         cursor.execute(Modify_Command)
+        sqliteConnection.commit()
     def Delete0():
         Confirmation_Delete = yes_no_box("Are you sure that you want to delete this entry?")
         if(Confirmation_Delete == "yes"):
             Delete_Command = "DELETE FROM Product_Lines WHERE ItemID = 0"
             cursor.execute(Delete_Command)
+            sqliteConnection.commit()
     
     def Back():
         ent_ItemD.delete(0, END)
@@ -550,7 +555,11 @@ def Browse_Items():
 # Implementing event on search_items button
 def search_items():
     cursor.close()
-    
+
+# Implementing event on Report button
+def Report():
+    cursor.close()    
+
 # Implementing event on backup button
 def Backup():
     Admin_Screen.destroy()
