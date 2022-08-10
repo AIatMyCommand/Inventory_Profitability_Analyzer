@@ -14,10 +14,10 @@ class CustomError(Exception):
 
     def __str__(self):
         return "Error: %s" % self.value
-
+    
 class ItemVar:
-    def __init__(self, ItemD, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
-        self.ItemD = ItemD
+    def __init__(self, itemD, price, cost_to_make, cost_to_ship, units_sold, beginning_INV, ending_INV, physical_volume):
+        self.itemD = itemD
         self.price = price
         self.units_sold = units_sold
         self.cost_to_make = cost_to_make
@@ -230,6 +230,7 @@ def Admin():
     except Exception:
         print("starting raise")
         raise CustomError("Unknown Error")
+
     Label(Admin_Screen, text = "    ").pack()
     Button(Admin_Screen, text = "Add Items", width = 10, height = 1, bg = "grey",
            command = Add_Items).pack()
@@ -271,7 +272,7 @@ def Add_Items():
         Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
                         ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
                         ent_Beginning_INV.get(),  ent_Ending_INV.get(),
-                        ent_Ending_INV.get(), Physical_Volume.get)
+                        ent_Physical_Volume.get)
         if(Item1.Are_Fields_Filled and Item1.Are_Fields_Correct_Type):
             #txt_Price = str(ent_Price.get())
             #ent_Cost_to_Make.get()
@@ -293,7 +294,7 @@ def Add_Items():
                 Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
                 args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost,
                                ent_Units_Sold.get(), Turnover, Profitability,
-                               Physical_Volume.get())
+                               ent_Physical_Volume.get())
                 cursor.execute("INSERT INTO Product_Lines VALUES ?, ?, ?, ?, ?, ?, ?",
                                args)
                 sqliteConnection.commit()
@@ -393,11 +394,10 @@ def Browse_Items():
     cursor = sqliteConnection.cursor()
     
     def Modify0():
-        
         Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
                         ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
                         ent_Beginning_INV.get(),  ent_Ending_INV.get(),
-                        ent_Ending_INV.get(), Physical_Volume.get)
+                        Physical_Volume.get)
         if(Item1.Are_Fields_Filled and Item1.Are_Fields_Correct_Type):
             #txt_Price = str(ent_Price.get())
             #ent_Cost_to_Make.get()
@@ -457,7 +457,6 @@ def Browse_Items():
         ent_Units_Sold.delete(0, END)
         ent_Beginning_INV.delete(0, END)
         ent_Ending_INV.delete(0, END)
-        del Item1
         Add_Items_Screen.destroy
         Admin
     # Fetch and output result
@@ -487,7 +486,7 @@ def Browse_Items():
     #Label(Browse_Items_Screen).grid(row = 0, column = 2)
 
     #rows = cursor.fetchall() <--Do I need this?
-    for i in 10:
+    for i in range(10):
         btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "30", command = Modify0)
         btnModify.grid(row = i + 2, column = 1)
         
