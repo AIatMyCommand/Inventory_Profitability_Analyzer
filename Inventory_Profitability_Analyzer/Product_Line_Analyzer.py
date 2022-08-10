@@ -6,7 +6,7 @@ from tkinter import filedialog as fd
 from tkinter import messagebox
 import os
 import sqlite3
-import io
+#import io
 
 class CustomError(Exception):
     def __init__(self, value):
@@ -232,9 +232,9 @@ def Admin():
         raise CustomError("Unknown Error")
     Label(Admin_Screen, text = "    ").pack()
     Button(Admin_Screen, text = "Add Items", width = 10, height = 1, bg = "grey",
-           command = add_Items).pack()
+           command = Add_Items).pack()
     Button(Admin_Screen, text = "Browse Items", width = 10, height = 1, bg = "grey",
-        command = browse_Items).pack()
+        command = Browse_Items).pack()
     Button(Admin_Screen, text = "Search Items", width = 10, height = 1, bg = "grey",
         command = search_items,).pack()
     Button(Admin_Screen, text = "Backup", width = 10, height = 1, bg = "grey",
@@ -387,6 +387,7 @@ def Browse_Items():
     Browse_Items_Screen = Tk()
     Browse_Items_Screen.geometry("800x650+800+0")
     Browse_Items_Screen.title("Browse Items")
+    cursor = sqliteConnection.cursor()
     
     def Modify0():
         
@@ -432,6 +433,7 @@ def Browse_Items():
             ent_Beginning_INV.delete(0, END)
             ent_Ending_INV.delete(0, END)
             del Item1
+
         Modify_Command = "Update Product_Lines SET " + +" WHERE ItemID = 0"
         cursor.execute(Modify_Command)
     def Delete0():
@@ -439,9 +441,21 @@ def Browse_Items():
         if(Confirmation_Delete == "yes"):
             Delete_Command = "DELETE FROM Product_Lines WHERE ItemID = 0"
             cursor.execute(Delete_Command)
+    
+    def Back():
+        ent_ItemD.delete(0, END)
+        ent_Price.delete(0, END)
+        ent_Cost_to_Make.delete(0, END)
+        ent_Cost_to_Ship.delete(0, END)
+        ent_Units_Sold.delete(0, END)
+        ent_Beginning_INV.delete(0, END)
+        ent_Ending_INV.delete(0, END)
+        del Item1
+        Add_Items_Screen.destroy
+        Admin
     # Fetch and output result
     # result = cursor.fetchall()
-    item = sqliteConnection.execute("SELECT * FROM Product_Lines ORDER BY ItemID")
+
     #Left-margin
     Label(Browse_Items_Screen, text = "     ").grid(row = 0, column = 0)
     Label(Browse_Items_Screen, text = "     ").grid(row = 1, column = 0)
@@ -464,38 +478,70 @@ def Browse_Items():
     Label(Browse_Items_Screen, text = "Ending INV", justify = LEFT).grid(row = 1, column = 7)
     Label(Browse_Items_Screen, text = "Physical Volume", justify = LEFT).grid(row = 1, column = 8)
     #Label(Browse_Items_Screen).grid(row = 0, column = 2)
+
+    #rows = cursor.fetchall() <--Do I need this?
     for i in 10:
+        btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "30", command = Modify0)
+        btnModify.grid(row = i + 2, column = 1)
+        
+        btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "30", command = Delete0)
+        btnDelete.grid(row = i + 2, column = 2)
+
         ent_ItemD = Entry(Browse_Items_Screen)
         ent_ItemD.bind()
-        ent_ItemD.grid(row = i + 2, column = 1)
+        ent_ItemD.grid(row = i + 2, column = 3)
+        get_ItemD = cursor.execute("SELECT ItemD FROM Product_Lines WHERE ItemID = ?", i)
+        ItemD = cursor.execute(get_ItemD)
+        ent_ItemD.insert(END, ItemD)
 
         ent_Price = Entry(Browse_Items_Screen)
         ent_Price.bind()
-        ent_Price.grid(row = i + 2, column = 2)
+        ent_Price.grid(row = i + 2, column = 3)
+        get_Price = cursor.execute("SELECT Price FROM Product_Lines WHERE ItemID = ?", i)
+        Price = cursor.execute(get_Price)
+        ent_Price.insert(END, Price)
 
         ent_Cost_to_Make = Entry(Browse_Items_Screen)
         ent_Cost_to_Make.bind()
-        ent_Cost_to_Make.grid(row = i + 2, column = 3)
+        ent_Cost_to_Make.grid(row = i + 2, column = 4)
+        get_Cost_to_Make = cursor.execute("SELECT Cost_to_Make FROM Product_Lines WHERE ItemID = ?", i)
+        Cost_to_Make = cursor.execute(get_Cost_to_Make)
+        ent_Cost_to_Make.insert(END, Cost_to_Make)
 
         ent_Cost_to_Ship = Entry(Browse_Items_Screen)
         ent_Cost_to_Ship.bind()
-        ent_Cost_to_Ship.grid(row = i + 2, column = 4)
+        ent_Cost_to_Ship.grid(row = i + 2, column = 5)
+        get_Cost_to_Ship = cursor.execute("SELECT Cost_to_Ship FROM Product_Lines WHERE ItemID = ?", i)
+        Cost_to_Ship = cursor.execute(get_Cost_to_Ship)
+        ent_Cost_to_Ship.insert(END, Cost_to_Ship)
 
         ent_Units_Sold = Entry(Browse_Items_Screen)
         ent_Units_Sold.bind()
-        ent_Units_Sold.grid(row = i + 2, column = 5)
+        ent_Units_Sold.grid(row = i + 2, column = 6)
+        get_Units_Sold = cursor.execute("SELECT Units_Sold FROM Product_Lines WHERE ItemID = ?", i)
+        Units_Sold = cursor.execute(get_Units_Sold)
+        ent_Units_Sold.insert(END, Units_Sold)
 
         ent_Beginning_INV = Entry(Browse_Items_Screen)
         ent_Beginning_INV.bind()
-        ent_Beginning_INV.grid(row = i + 2, column = 6)
+        ent_Beginning_INV.grid(row = i + 2, column = 7)
+        get_Beginning_INV = cursor.execute("SELECT Beginning_INV FROM Product_Lines WHERE ItemID = ?", i)
+        Beginning_INV = cursor.execute(get_Beginning_INV)
+        ent_Beginning_INV.insert(END, Beginning_INV)
 
         ent_Ending_INV = Entry(Browse_Items_Screen)
         ent_Ending_INV.bind()
-        ent_Ending_INV.grid(row = i + 2, column = 7)
+        ent_Ending_INV.grid(row = i + 2, column = 8)
+        get_Ending_INV = cursor.execute("SELECT Ending_INV FROM Product_Lines WHERE ItemID = ?", i)
+        Beginning_INV = cursor.execute(get_Ending_INV)
+        ent_Ending_INV.insert(END, Beginning_INV)
 
         ent_Physical_Volume = Entry(Browse_Items_Screen)
         ent_Physical_Volume.bind()
-        ent_Physical_Volume.grid(row = i + 2, column = 8)
+        ent_Physical_Volume.grid(row = i + 2, column = 9)
+        get_Physical_Volume = cursor.execute("SELECT Physical_Volume FROM Product_Lines WHERE ItemID = ?", i)
+        Physical_Volume = cursor.execute(get_Physical_Volume)
+        ent_Physical_Volume.insert(END, Physical_Volume)
     
         btnBack = Button(Browse_Items_Screen, text = "Back", height = "2", width = "30", command = Back)
         btnBack.grid(row = 12, column = 2)
