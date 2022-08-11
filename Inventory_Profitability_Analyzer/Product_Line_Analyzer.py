@@ -19,19 +19,18 @@ class CustomError(Exception):
 class ItemVar:
     def __init__(self, itemD, price, cost_to_make, cost_to_ship, units_sold, beginning_INV, ending_INV, physical_volume):
         self.itemD = itemD
-        self.price = price
-        self.units_sold = units_sold
-        self.cost_to_make = cost_to_make
-        self.cost_to_ship = cost_to_ship
-        self.beginning_INV = beginning_INV
-        self.ending_INV = ending_INV
-        self.physical_volume = physical_volume
+        self.price = float(price)
+        self.units_sold = int(units_sold)
+        self.cost_to_make = float(cost_to_make)
+        self.cost_to_ship = float(cost_to_ship)
+        self.beginning_INV = float(beginning_INV)
+        self.ending_INV = float(ending_INV)
+        self.physical_volume = float(physical_volume)
 
     def are_fields_filled(self, ItemD, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
-        if(len(ItemD) > 0 and len(price) > 0 and 
-           len(units_sold) > 0 and len(cost_to_make) > 0 and
-           len(cost_to_ship) > 0 and len(beginning_INV) > 0 and
-           len(ending_INV) > 0 or len(physical_volume) > 0):
+        if(len(ItemD) > 0 and len(price) > 0 and len(units_sold) > 0 and 
+           len(cost_to_make) > 0 and len(cost_to_ship) > 0 and
+           len(beginning_INV) > 0 and len(ending_INV) > 0 or len(physical_volume) > 0):
             return True
         else:
             errorbox("No textboxes may have an empty input")
@@ -39,13 +38,6 @@ class ItemVar:
     def are_fields_correct_type(self, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
         # try to convert to approriate types just to verify the data types
         try:
-            price = float(price)
-            units_sold = int(units_sold)
-            cost_to_make = float(cost_to_make)
-            cost_to_ship = float(cost_to_ship)
-            beginning_INV = float(beginning_INV)
-            ending_INV = float(ending_INV)
-            physical_volume = float(physical_volume)
             #test if conversion was successful
             assert type(price) is float, "Price should be a decimal"
             assert type(units_sold) is int, "Units_Sold should be a whole number"
@@ -61,7 +53,8 @@ class ItemVar:
             print("Item must be text, units sold must be a whole number and all other fields must be numbers")
         except Exception as e:
             errorbox(e)
-            raise CustomError("Unknown Error")        
+            errorstring = "Unknown Error" + e
+            raise CustomError(errorstring)
             
 # Designing root(first) window
 def root():
@@ -74,8 +67,8 @@ def root():
     Label(text = "").pack()
     Button(text = "Login", height = "2", width = "30", command = login).pack()
     Label(text = "").pack()
-    #Button(text = "Skip Login", height = "2", width = "30", command = admin).pack()
-    Button(text = "Skip Login", height = "2", width = "30", command = delete_login_success).pack()
+    Button(text = "Skip Login", height = "2", width = "30", command = admin).pack()
+    #Button(text = "Skip Login", height = "2", width = "30", command = delete_login_success).pack()
     Label(text = "").pack()
     #The following line is there is case Alex wants to see register user work
     # Button(text = "Register", height = "2", width = "30", command = register).pack()
@@ -152,7 +145,8 @@ def login_verify():
             verify = file1.read().splitlines()
             if password1 in verify:
                 # Login_success()
-                infobox("Login success")
+                #infobox("Login success")
+                login_success
             else:
                 # password_not_recognised()
                 errorbox("Your password is incorrect")
@@ -168,13 +162,14 @@ def login_success():
     Login_Success_Screen.geometry("150x100+800+0")
     Label(Login_Success_Screen, text = "Login Success").pack()
     Button(Login_Success_Screen, text = "OK", command = delete_login_success).pack()
+    admin
 
 # Designing popup for Login invalid password
 def password_not_recognised():
     global password_not_recog_screen
     password_not_recog_screen = Toplevel(Login_Screen)
     password_not_recog_screen.title("Error")
-    password_not_recog_screen.geometry("150x100+0+800")
+    password_not_recog_screen.geometry("150x100+800+0")
     Label(password_not_recog_screen, text = "Your password is incorrect").pack()
     Button(password_not_recog_screen, text = "OK",
            command = delete_Password_Not_Recognised).pack()
@@ -192,6 +187,7 @@ def user_not_found():
 # Deleting popups
 def delete_login_success():
     Login_Success_Screen.destroy()
+    admin
 
 def delete_Password_Not_Recognised():
     password_not_recog_screen.destroy()
@@ -211,24 +207,6 @@ def admin():
     Label(Admin_Screen, text = "What Would You Like To Do Today?", bg = "gray71").pack(
         side = "top")
     Label(Admin_Screen, text = "").pack()
-    # connect to the database
-    try:
-        print("starting try")
-        # Connect to DB and create a cursor
-        sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
-        cursor = sqliteConnection.cursor()
-        query = "CREATE TABLE IF NOT EXISTS Product_Lines(ItemID INT PRIMARY KEY NOT NULL, ItemD CHAR(25) NOT NULL, Price, Units_Sold INT NOT NULL, Marginal Cost REAL NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical Volume REAL NOT NULL)"
-        res = cursor.execute(query)
-        print(res)
-
-    # Handle errors
-    except sqlite3.Error as error:
-        print("An error occured - ", error)
-
-    except Exception:
-        print("starting raise")
-        raise CustomError("Unknown Error")
-
     Label(Admin_Screen, text = "    ").pack()
     Button(Admin_Screen, text = "Add Items", width = 10, height = 1, bg = "grey",
            command = add_items).pack()
@@ -267,37 +245,43 @@ def add_items():
 
     # implementing event on submit button click
     def submit():
-        Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
-                        ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
-                        ent_Beginning_INV.get(),  ent_Ending_INV.get(),
+        Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(), ent_Cost_to_Ship.get(),
+                        ent_Units_Sold.get(), ent_Beginning_INV.get(),  ent_Ending_INV.get(),
                         ent_Physical_Volume.get)
         if(Item1.are_fields_filled and Item1.are_fields_correct_type):
+            # connect to the database
             try:
-                Marginal_Cost = float(ent_Cost_to_Make.get()) - float(ent_Cost_to_Ship.get())
-                AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
+                print("starting try")
+                # Connect to DB and create a cursor
+                sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
+                cursor = sqliteConnection.cursor()
+                query = "CREATE TABLE IF NOT EXISTS Product_Lines(ItemID INT PRIMARY KEY NOT NULL, ItemD CHAR(25) NOT NULL, Price, Units_Sold INT NOT NULL, Marginal Cost REAL NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical Volume REAL NOT NULL)"
+                res = cursor.execute(query)
+                print(res)
+                Marginal_Cost = Item1.cost_to_make - Item1.cost_to_ship
+                AVG_Value_of_Item_Inventory = (Item1.beginning_INV + Item1.ending_INV)/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
                 Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
-                args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost,
-                               ent_Units_Sold.get(), Turnover, Profitability,
-                               ent_Physical_Volume.get())
-                cursor.execute("INSERT INTO Product_Lines VALUES ?, ?, ?, ?, ?, ?, ?",
-                               args)
+                args = (Item1.itemD, Item1.price, Marginal_Cost, Item1.units_sold, Turnover, Profitability,
+                        Item1.physical_volume)
+                cursor.execute("INSERT INTO Product_Lines VALUES '{}', '{}', '{}', '{}', '{}', '{}', '{}';".format(args))
                 sqliteConnection.commit()
+                print("successfully added")
             # Handle errors
             except sqlite3.Error as error:
-                print("An error occurred - ", error)
+                print("An error occured - ", error)
             except Exception:
-                print("Unknown Error")
-                raise CustomError("Unknown Error")    
-            # clearing the contents of text entry boxes
-            ent_ItemD.delete(0, END)
-            ent_Price.delete(0, END)
-            ent_Cost_to_Make.delete(0, END)
-            ent_Cost_to_Ship.delete(0, END)
-            ent_Units_Sold.delete(0, END)
-            ent_Beginning_INV.delete(0, END)
-            ent_Ending_INV.delete(0, END)
-            del Item1
+                print("starting raise")
+                raise CustomError("Unknown Error")
+            finally:
+                ent_ItemD.delete(0, END)
+                ent_Price.delete(0, END)
+                ent_Cost_to_Make.delete(0, END)
+                ent_Cost_to_Ship.delete(0, END)
+                ent_Units_Sold.delete(0, END)
+                ent_Beginning_INV.delete(0, END)
+                ent_Ending_INV.delete(0, END)
+                del Item1
 
     # Implementing event on back button
     def back():
@@ -394,8 +378,8 @@ def browse_items():
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
                 args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
                         Turnover, Profitability, Physical_Volume.get(), i)
-                Modify_Command = ("Update Product_Lines SET ?, ?, ?, ?, ?, ?, ?",
-                         " WHERE ItemID = ?", args) #how to pass a variable in a tuple
+                Modify_Command = ("Update Product_Lines SET '{}', '{}', '{}', '{}', '{}', '{}', '{}'".format +
+                         " WHERE ItemID = '{}'", args) #how to pass a variable in a tuple
                 cursor.execute(Modify_Command)
                 sqliteConnection.commit()
 
@@ -419,7 +403,7 @@ def browse_items():
     def delete(i):
         Confirmation_Delete = yes_no_box("Are you sure that you want to delete this entry?")
         if(Confirmation_Delete == "yes"):
-            Delete_Command = "DELETE FROM Product_Lines WHERE ItemID = 0"
+            Delete_Command = ("DELETE FROM Product_Lines WHERE ItemID = ?", i)
             cursor.execute(Delete_Command)
             sqliteConnection.commit()
     
