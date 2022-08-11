@@ -378,8 +378,8 @@ def browse_items():
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
                 args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
                         Turnover, Profitability, Physical_Volume.get(), i)
-                Modify_Command = ("Update Product_Lines SET '{}', '{}', '{}', '{}', '{}', '{}', '{}'".format +
-                         " WHERE ItemID = '{}'", args) #how to pass a variable in a tuple
+                Modify_Command = ("Update Product_Lines SET '{}', '{}', '{}', '{}', '{}', '{}', '{}'".format(args) +
+                         " WHERE ItemID = '{}'".format(i)) #how to pass a variable in a tuple
                 cursor.execute(Modify_Command)
                 sqliteConnection.commit()
 
