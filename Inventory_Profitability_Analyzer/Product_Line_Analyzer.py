@@ -14,7 +14,8 @@ class CustomError(Exception):
 
     def __str__(self):
         return "Error: %s" % self.value
-    
+
+#implementing ItemVar object
 class ItemVar:
     def __init__(self, itemD, price, cost_to_make, cost_to_ship, units_sold, beginning_INV, ending_INV, physical_volume):
         self.itemD = itemD
@@ -26,7 +27,7 @@ class ItemVar:
         self.ending_INV = ending_INV
         self.physical_volume = physical_volume
 
-    def Are_Fields_Filled(self, ItemD, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
+    def are_fields_filled(self, ItemD, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
         if(len(ItemD) > 0 and len(price) > 0 and 
            len(units_sold) > 0 and len(cost_to_make) > 0 and
            len(cost_to_ship) > 0 and len(beginning_INV) > 0 and
@@ -35,7 +36,7 @@ class ItemVar:
         else:
             errorbox("No textboxes may have an empty input")
 
-    def Are_Fields_Correct_Type(self, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
+    def are_fields_correct_type(self, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
         # try to convert to approriate types just to verify the data types
         try:
             price = float(price)
@@ -63,7 +64,7 @@ class ItemVar:
             raise CustomError("Unknown Error")        
             
 # Designing root(first) window
-def Root():
+def root():
     global Root_Screen
     Root_Screen = Tk()
     Root_Screen.geometry("400x300+800+0")
@@ -71,10 +72,10 @@ def Root():
     Label(text = "Select Your Choice", bg = "gray71", width = "300", height = "2",
         font = ("Calibri", 13)).pack()
     Label(text = "").pack()
-    Button(text = "Login", height = "2", width = "30", command = Login).pack()
+    Button(text = "Login", height = "2", width = "30", command = login).pack()
     Label(text = "").pack()
-    Button(text = "Skip Login", height = "2", width = "30", command =
-           Admin).pack()
+    #Button(text = "Skip Login", height = "2", width = "30", command = admin).pack()
+    Button(text = "Skip Login", height = "2", width = "30", command = delete_login_success).pack()
     Label(text = "").pack()
     #The following line is there is case Alex wants to see register user work
     # Button(text = "Register", height = "2", width = "30", command = register).pack()
@@ -103,30 +104,30 @@ def Root():
 #    Button(register_screen, text = "Register", width = 10, height = 1, bg = "grey", command = register_user).pack()
 
 # Designing window for Login
-def Login():
-    global Login_screen, Username, Password, ent_Username, ent_Password
+def login():
+    global Login_Screen, Username, Password, ent_Username, ent_Password
     global Username_Verify, Password_Verify, ent_Username_Login, ent_Password_Login
     Username = StringVar()
     Password = StringVar()
-    Login_screen = Toplevel(Root_Screen)
-    Login_screen.title("Login")
-    Login_screen.geometry("300x250+800+0")
-    Label(Login_screen, text = "Please enter details below to Login").pack()
-    Label(Login_screen, text = "").pack()
+    Login_Screen = Toplevel(Root_Screen)
+    Login_Screen.title("Login")
+    Login_Screen.geometry("300x250+800+0")
+    Label(Login_Screen, text = "Please enter details below to Login").pack()
+    Label(Login_Screen, text = "").pack()
     Username_Verify = StringVar()
     Password_Verify = StringVar()
-    Label(Login_screen, text = "Username: ").pack()
-    ent_Username_Login = Entry(Login_screen, textvariable = Username_Verify)
+    Label(Login_Screen, text = "Username: ").pack()
+    ent_Username_Login = Entry(Login_Screen, textvariable = Username_Verify)
     ent_Username_Login.pack()
-    Label(Login_screen, text = "").pack()
-    Label(Login_screen, text = "Password: ").pack()
-    ent_Password_Login = Entry(Login_screen, textvariable = Password_Verify, show = "*")
+    Label(Login_Screen, text = "").pack()
+    Label(Login_Screen, text = "Password: ").pack()
+    ent_Password_Login = Entry(Login_Screen, textvariable = Password_Verify, show = "*")
     ent_Password_Login.pack()
-    Label(Login_screen, text = "").pack()
-    Button(Login_screen, text = "Login", width = 10, height = 1, command = Login_Verify).pack()
+    Label(Login_Screen, text = "").pack()
+    Button(Login_Screen, text = "Login", width = 10, height = 1, command = login_verify).pack()
     
 # Implementing event on register button
-def Register_User():
+def register_user():
     Username_Info = Username.get()
     Password_Info = Password.get()
     file = open(Username_Info, "w")
@@ -136,7 +137,7 @@ def Register_User():
     # Label(register_screen, text = "Registration Success", fg = "green", font = ("calibri", 11)).pack()
 
 # Implementing event on Login button
-def Login_Verify():
+def login_verify():
     # This version uses a clear text file to store the username & password. The next version will encrypt the file
     username1 = Username_Verify.get()
     password1 = Password_Verify.get()
@@ -150,7 +151,7 @@ def Login_Verify():
             file1 = open(username1, "r")
             verify = file1.read().splitlines()
             if password1 in verify:
-                # Login_sucess()
+                # Login_success()
                 infobox("Login success")
             else:
                 # password_not_recognised()
@@ -160,19 +161,18 @@ def Login_Verify():
             errorbox("User not found")
 
 # Designing popup for Login success
-def Login_sucess():
-    Admin_Screen.destroy()
+def login_success():
     global Login_Success_Screen
-    Login_Success_Screen = Toplevel(Login_screen)
+    Login_Success_Screen = Toplevel(Login_Screen)
     Login_Success_Screen.title("Success")
     Login_Success_Screen.geometry("150x100+800+0")
     Label(Login_Success_Screen, text = "Login Success").pack()
-    Button(Login_Success_Screen, text = "OK", command = delete_Login_Success).pack()
+    Button(Login_Success_Screen, text = "OK", command = delete_login_success).pack()
 
 # Designing popup for Login invalid password
 def password_not_recognised():
     global password_not_recog_screen
-    password_not_recog_screen = Toplevel(Login_screen)
+    password_not_recog_screen = Toplevel(Login_Screen)
     password_not_recog_screen.title("Error")
     password_not_recog_screen.geometry("150x100+0+800")
     Label(password_not_recog_screen, text = "Your password is incorrect").pack()
@@ -182,7 +182,7 @@ def password_not_recognised():
 # Designing popup for user not found
 def user_not_found():
     global user_not_found_screen
-    user_not_found_screen = Toplevel(Login_screen)
+    user_not_found_screen = Toplevel(Login_Screen)
     user_not_found_screen.title("Error")
     user_not_found_screen.geometry("150x100+800+0")
     Label(user_not_found_screen, text = "User Not Found").pack()
@@ -190,9 +190,8 @@ def user_not_found():
            command = delete_User_Not_Found_Screen).pack()
     
 # Deleting popups
-def delete_Login_Success():
+def delete_login_success():
     Login_Success_Screen.destroy()
-    Admin()
 
 def delete_Password_Not_Recognised():
     password_not_recog_screen.destroy()
@@ -201,7 +200,7 @@ def delete_User_Not_Found_Screen():
     user_not_found_screen.destroy()
 
 # Admin screen
-def Admin():
+def admin():
     global Admin_Screen, ItemD, Price, Units_Sold, Cost_to_Make, Cost_to_Ship, Marginal_Cost, Beginning_INV, Ending_INV, AVG_Value_of_Item_Inventory
     global Turnover, Profitability, Physical_Volume, sqliteConnection, cursor
     Admin_Screen = Toplevel(Root_Screen)
@@ -232,13 +231,13 @@ def Admin():
 
     Label(Admin_Screen, text = "    ").pack()
     Button(Admin_Screen, text = "Add Items", width = 10, height = 1, bg = "grey",
-           command = Add_Items).pack()
+           command = add_items).pack()
     Button(Admin_Screen, text = "Browse Items", width = 10, height = 1, bg = "grey",
-        command = Browse_Items).pack()
+        command = browse_items).pack()
     Button(Admin_Screen, text = "Search Items", width = 10, height = 1, bg = "grey",
-        command = Search_Items).pack()
+        command = search_items).pack()
     Button(Admin_Screen, text = "Backup", width = 10, height = 1, bg = "grey",
-           command = Backup).pack()
+           command = backup).pack()
     Button(Admin_Screen, text = "Restore", width = 10, height = 1, bg = "grey",
            command = restore).pack()
     Label(Admin_Screen, text = "").pack()
@@ -259,7 +258,7 @@ def yes_no_box(msg):
     return choice
 
 # Implementing event on Add_Items button
-def Add_Items():
+def add_items():
     Admin_Screen.destroy()
     global Add_Items_Screen
     Add_Items_Screen = Toplevel(Root_Screen)
@@ -267,26 +266,13 @@ def Add_Items():
     Add_Items_Screen.geometry("400x300+800+0")
 
     # implementing event on submit button click
-    def Submit():
+    def submit():
         Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
                         ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
                         ent_Beginning_INV.get(),  ent_Ending_INV.get(),
                         ent_Physical_Volume.get)
-        if(Item1.Are_Fields_Filled and Item1.Are_Fields_Correct_Type):
-            #txt_Price = str(ent_Price.get())
-            #ent_Cost_to_Make.get()
-            #ent_Cost_to_Ship.get()
-            #txt_Units_Sold = str(units_sold)
-            #Marginal_Cost = (ent_Cost_to_Make.get() + cost_to_ship)
-            #AVG_Value_of_Item_Inventory = (beginning_INV + ending_INV)/2
-            #txt_Turnover = str(Marginal_Cost/AVG_Value_of_Item_Inventory)
-            #txt_Profitability = str(price/Marginal_Cost)
-            #txt_Physical_Volume = str(physical_volume)
-            #query = "INSERT INTO Product_Lines VALUES ?", ItemD, txt_Price, txt_Marginal_Cost, txt_Units_Sold, txt_Turnover, txt_Profitability, txt_Physical_Volume
+        if(Item1.are_fields_filled and Item1.are_fields_correct_type):
             try:
-                #cursor.execute("INSERT INTO Product_Lines VALUES ?", ent_ItemD.get(),
-                #               ent_Price.get(), txt_Marginal_Cost, txt_Units_Sold,
-                #               txt_Turnover, txt_Profitability, txt_Physical_Volume)
                 Marginal_Cost = float(ent_Cost_to_Make.get()) - float(ent_Cost_to_Ship.get())
                 AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
@@ -314,7 +300,7 @@ def Add_Items():
             del Item1
 
     # Implementing event on back button
-    def Back():
+    def back():
         ent_ItemD.delete(0, END)
         ent_Price.delete(0, END)
         ent_Cost_to_Make.delete(0, END)
@@ -323,7 +309,7 @@ def Add_Items():
         ent_Beginning_INV.delete(0, END)
         ent_Ending_INV.delete(0, END)
         Add_Items_Screen.destroy
-        Admin
+        admin
 
     Label(Add_Items_Screen, text = "     ").grid(row = 0, column = 0)
     Label(Add_Items_Screen, text = "     ").grid(row = 1, column = 0)
@@ -377,14 +363,16 @@ def Add_Items():
     ent_Physical_Volume.bind()
     ent_Physical_Volume.grid(row = 8, column = 2)
 
-    btnSubmit = Button(Add_Items_Screen, text = "Submit", height = "2", width = "30", command = Submit)
+    btnSubmit = Button(Add_Items_Screen, text = "Submit", height = "2", width = "30",
+                       command = submit)
     btnSubmit.grid(row = 10, column = 2)
 
-    btnBack = Button(Add_Items_Screen, text = "Back", height = "2", width = "30", command = Back)
+    btnBack = Button(Add_Items_Screen, text = "Back", height = "2", width = "30",
+                     command = back)
     btnBack.grid(row = 11, column = 2)
 
 # Implementing event on Browse_Items button
-def Browse_Items():
+def browse_items():
     global Browse_Items_Screen
     Admin_Screen.destroy()
     Browse_Items_Screen = Tk()
@@ -392,35 +380,22 @@ def Browse_Items():
     Browse_Items_Screen.title("Browse Items")
     cursor = sqliteConnection.cursor()
     
-    def Modify0():
+    def modify(i):
         Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
                         ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
                         ent_Beginning_INV.get(),  ent_Ending_INV.get(),
                         Physical_Volume.get)
-        if(Item1.Are_Fields_Filled and Item1.Are_Fields_Correct_Type):
-            #txt_Price = str(ent_Price.get())
-            #ent_Cost_to_Make.get()
-            #ent_Cost_to_Ship.get()
-            #txt_Units_Sold = str(units_sold)
-            #Marginal_Cost = (ent_Cost_to_Make.get() + cost_to_ship)
-            #AVG_Value_of_Item_Inventory = (beginning_INV + ending_INV)/2
-            #txt_Turnover = str(Marginal_Cost/AVG_Value_of_Item_Inventory)
-            #txt_Profitability = str(price/Marginal_Cost)
-            #txt_Physical_Volume = str(physical_volume)
-            #query = "INSERT INTO Product_Lines VALUES ?", ItemD, txt_Price, txt_Marginal_Cost, txt_Units_Sold, txt_Turnover, txt_Profitability, txt_Physical_Volume
+        if(Item1.are_fields_filled and Item1.are_fields_correct_type):
             try:
-                #cursor.execute("INSERT INTO Product_Lines VALUES ?", ent_ItemD.get(),
-                #               ent_Price.get(), txt_Marginal_Cost, txt_Units_Sold,
-                #               txt_Turnover, txt_Profitability, txt_Physical_Volume)
                 Marginal_Cost = float(ent_Cost_to_Make.get()) - float(ent_Cost_to_Ship.get())
                 AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
                 Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
                 args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
-                        Turnover, Profitability, Physical_Volume.get())
+                        Turnover, Profitability, Physical_Volume.get(), i)
                 Modify_Command = ("Update Product_Lines SET ?, ?, ?, ?, ?, ?, ?",
-                         " WHERE ItemID = 0", args)
+                         " WHERE ItemID = ?", args) #how to pass a variable in a tuple
                 cursor.execute(Modify_Command)
                 sqliteConnection.commit()
 
@@ -441,14 +416,14 @@ def Browse_Items():
             del Item1
 
     #Implementing Delete button click event
-    def Delete0():
+    def delete(i):
         Confirmation_Delete = yes_no_box("Are you sure that you want to delete this entry?")
         if(Confirmation_Delete == "yes"):
             Delete_Command = "DELETE FROM Product_Lines WHERE ItemID = 0"
             cursor.execute(Delete_Command)
             sqliteConnection.commit()
     
-    def Back():
+    def back():
         ent_ItemD.delete(0, END)
         ent_Price.delete(0, END)
         ent_Cost_to_Make.delete(0, END)
@@ -457,7 +432,7 @@ def Browse_Items():
         ent_Beginning_INV.delete(0, END)
         ent_Ending_INV.delete(0, END)
         Add_Items_Screen.destroy
-        Admin
+        admin
     # Fetch and output result
     # result = cursor.fetchall()
 
@@ -488,10 +463,10 @@ def Browse_Items():
 
     #rows = cursor.fetchall() <--Do I need this?
     for i in range(10):
-        btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "8", command = Modify0)
+        btnModify = Button(Browse_Items_Screen, text = "Modify", height = "2", width = "8", command = modify(i))
         btnModify.grid(row = i + 2, column = 1)
         
-        btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "8", command = Delete0)
+        btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "8", command = delete(i))
         btnDelete.grid(row = i + 2, column = 2)
 
         ent_ItemD = Entry(Browse_Items_Screen, width = "6")
@@ -550,12 +525,12 @@ def Browse_Items():
         Physical_Volume = cursor.execute(get_Physical_Volume)
         ent_Physical_Volume.insert(END, Physical_Volume)
     
-        btnBack = Button(Browse_Items_Screen, text = "Back", height = "2", width = "30", command = Back)
+        btnBack = Button(Browse_Items_Screen, text = "Back", height = "2", width = "30", command = back)
         btnBack.grid(row = 12, column = 2)
         btnBack.grid(row = 11, column = 2)
 
 # Implementing event on search_items button
-def Search_Items():
+def search_items():
     global Search_Screen
     Search_Screen = Tk()
     Search_Screen.geometry("400x300+800+0")
@@ -592,7 +567,7 @@ def Search_Items():
 
 
 # Implementing event on Report button
-def Report():
+def report():
     global Report_Screen
     Report_Screen = Tk()
     Report_Screen.geometry("400x300+800+0")
@@ -626,10 +601,8 @@ def Report():
             e.insert(END, item[j])
         i=i+1
 
-  
-
 # Implementing event on backup button
-def Backup():
+def backup():
     Admin_Screen.destroy()
     backupCommand = ""
     filename = "Product_Line_Analyzer.db"
@@ -655,14 +628,15 @@ def restore():
 
 # Implementing event on logout button
 def logout():
+    Admin_Screen.destroy()
     cursor.close()
     sqliteConnection.close()
     print("SQLite Connection closed")
-    Root()
+    root()
 
 # Start here
 if __name__ == "__main__":
     #   print("This file is being run directly")
-    Root()
+    root()
 else:
     print("This file has been imported")
