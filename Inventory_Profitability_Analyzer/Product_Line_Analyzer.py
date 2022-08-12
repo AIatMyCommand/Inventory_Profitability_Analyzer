@@ -17,8 +17,8 @@ class CustomError(Exception):
 
 #implementing ItemVar object
 class ItemVar:
-    def __init__(self, itemD, price, cost_to_make, cost_to_ship, units_sold, beginning_INV, ending_INV, physical_volume):
-        self.itemD = itemD
+    def __init__(self, description, price, cost_to_make, cost_to_ship, units_sold, beginning_INV, ending_INV, physical_volume):
+        self.description = description
         self.price = float(price)
         self.units_sold = int(units_sold)
         self.cost_to_make = float(cost_to_make)
@@ -27,8 +27,8 @@ class ItemVar:
         self.ending_INV = float(ending_INV)
         self.physical_volume = float(physical_volume)
 
-    def are_fields_filled(self, ItemD, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
-        if(len(ItemD) > 0 and len(price) > 0 and len(units_sold) > 0 and 
+    def are_fields_filled(self, Description, price, units_sold, cost_to_make, cost_to_ship, beginning_INV, ending_INV, physical_volume):
+        if(len(Description) > 0 and len(price) > 0 and len(units_sold) > 0 and 
            len(cost_to_make) > 0 and len(cost_to_ship) > 0 and
            len(beginning_INV) > 0 and len(ending_INV) > 0 or len(physical_volume) > 0):
             return True
@@ -181,8 +181,8 @@ def user_not_found():
     user_not_found_screen.title("Error")
     user_not_found_screen.geometry("150x100+800+0")
     Label(user_not_found_screen, text = "User Not Found").pack()
-    Button(user_not_found_screen, text = "OK",
-           command = delete_User_Not_Found_Screen).pack()
+    Button(user_not_found_screen, text = "OK", command = delete_User_Not_Found_Screen
+           ).pack()
     
 # Deleting popups
 def delete_login_success():
@@ -197,8 +197,9 @@ def delete_User_Not_Found_Screen():
 
 # Admin screen
 def admin():
-    global Admin_Screen, ItemD, Price, Units_Sold, Cost_to_Make, Cost_to_Ship, Marginal_Cost, Beginning_INV, Ending_INV, AVG_Value_of_Item_Inventory
-    global Turnover, Profitability, Physical_Volume, sqliteConnection, cursor
+    global Admin_Screen
+    #global Admin_Screen, Description, Price, Units_Sold, Cost_to_Make, Cost_to_Ship, Marginal_Cost, Beginning_INV, Ending_INV, AVG_Value_of_Item_Inventory
+    #global Turnover, Profitability, Physical_Volume
     Admin_Screen = Toplevel(Root_Screen)
     Admin_Screen.title("Admin")
     Admin_Screen.geometry("300x400+800+0")
@@ -238,16 +239,16 @@ def yes_no_box(msg):
 # Implementing event on Add_Items button
 def add_items():
     Admin_Screen.destroy()
-    global Add_Items_Screen
+    global Add_Items_Screen, sqliteConnection, cursor
     Add_Items_Screen = Toplevel(Root_Screen)
     Add_Items_Screen.title("Add Items")
     Add_Items_Screen.geometry("400x300+800+0")
 
     # implementing event on submit button click
     def submit():
-        Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(), ent_Cost_to_Ship.get(),
+        Item1 = ItemVar(ent_Description.get(),  ent_Price.get(),  ent_Cost_to_Make.get(), ent_Cost_to_Ship.get(),
                         ent_Units_Sold.get(), ent_Beginning_INV.get(),  ent_Ending_INV.get(),
-                        ent_Physical_Volume.get)
+                        ent_Physical_Volume.get())
         if(Item1.are_fields_filled and Item1.are_fields_correct_type):
             # connect to the database
             try:
@@ -255,18 +256,20 @@ def add_items():
                 # Connect to DB and create a cursor
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
                 cursor = sqliteConnection.cursor()
-                query = "CREATE TABLE IF NOT EXISTS Product_Lines(ItemID INT PRIMARY KEY NOT NULL, ItemD CHAR(25) NOT NULL, Price, Units_Sold INT NOT NULL, Marginal Cost REAL NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical Volume REAL NOT NULL)"
+                query = '''CREATE TABLE IF NOT EXISTS Product_Lines(ItemID INT PRIMARY KEY NOT NULL, Description CHAR(25) NOT NULL, Price, Units_Sold INT NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical Volume REAL NOT NULL)'''
                 res = cursor.execute(query)
                 print(res)
                 Marginal_Cost = Item1.cost_to_make - Item1.cost_to_ship
                 AVG_Value_of_Item_Inventory = (Item1.beginning_INV + Item1.ending_INV)/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
-                Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
-                args = (Item1.itemD, Item1.price, Marginal_Cost, Item1.units_sold, Turnover, Profitability,
+                Profitability = ((Item1.price + Marginal_Cost)/Marginal_Cost)
+                args = (Item1.description, Item1.price, Marginal_Cost, Item1.units_sold, Turnover, Profitability,
                         Item1.physical_volume)
-                cursor.execute("INSERT INTO Product_Lines VALUES '{}', '{}', '{}', '{}', '{}', '{}', '{}';".format(args))
+                cursor.execute('''INSERT INTO Product_Lines VALUES '{}', '{}', '{}', '{}', '{}', '{}', '{}';'''.format(args))
                 sqliteConnection.commit()
                 print("successfully added")
+                cursor.close()
+                sqliteConnection.close()
             # Handle errors
             except sqlite3.Error as error:
                 print("An error occured - ", error)
@@ -274,24 +277,26 @@ def add_items():
                 print("starting raise")
                 raise CustomError("Unknown Error")
             finally:
-                ent_ItemD.delete(0, END)
+                ent_Description.delete(0, END)
                 ent_Price.delete(0, END)
                 ent_Cost_to_Make.delete(0, END)
                 ent_Cost_to_Ship.delete(0, END)
                 ent_Units_Sold.delete(0, END)
                 ent_Beginning_INV.delete(0, END)
                 ent_Ending_INV.delete(0, END)
+                ent_Physical_Volume.delete(0, END)
                 del Item1
 
     # Implementing event on back button
     def back():
-        ent_ItemD.delete(0, END)
+        ent_Description.delete(0, END)
         ent_Price.delete(0, END)
         ent_Cost_to_Make.delete(0, END)
         ent_Cost_to_Ship.delete(0, END)
         ent_Units_Sold.delete(0, END)
         ent_Beginning_INV.delete(0, END)
         ent_Ending_INV.delete(0, END)
+        ent_Physical_Volume.delete(0, END)
         Add_Items_Screen.destroy
         admin
 
@@ -315,9 +320,9 @@ def add_items():
     Label(Add_Items_Screen, text = "Physical Volume", justify = LEFT).grid(row = 8, column = 1)
     Label(Add_Items_Screen).grid(row = 0, column = 2)
 
-    ent_ItemD = Entry(Add_Items_Screen)
-    ent_ItemD.bind()
-    ent_ItemD.grid(row = 1, column = 2)
+    ent_Description = Entry(Add_Items_Screen)
+    ent_Description.bind()
+    ent_Description.grid(row = 1, column = 2)
 
     ent_Price = Entry(Add_Items_Screen)
     ent_Price.bind()
@@ -365,24 +370,25 @@ def browse_items():
     cursor = sqliteConnection.cursor()
     
     def modify(i):
-        Item1 = ItemVar(ent_ItemD.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
+        Item1 = ItemVar(ent_Description.get(),  ent_Price.get(),  ent_Cost_to_Make.get(),
                         ent_Cost_to_Ship.get(), ent_Units_Sold.get(),  
                         ent_Beginning_INV.get(),  ent_Ending_INV.get(),
                         Physical_Volume.get)
         if(Item1.are_fields_filled and Item1.are_fields_correct_type):
             try:
-                Marginal_Cost = float(ent_Cost_to_Make.get()) - float(ent_Cost_to_Ship.get())
-                AVG_Value_of_Item_Inventory = (float(ent_Beginning_INV.get()) + float(ent_Ending_INV.get()))/2
+                Marginal_Cost = Item1.Cost_to_Make - Item1.Cost_to_Ship
+                AVG_Value_of_Item_Inventory = (Item1.Beginning_INV + Item1.Ending_INV)/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
-                Profitability = ((ent_Price.get() + Marginal_Cost)/Marginal_Cost)
+                Profitability = ((Item1.Price + Marginal_Cost)/Marginal_Cost)
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
-                args = (ent_ItemD.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
+                args = (ent_Description.get(), ent_Price.get(), Marginal_Cost, ent_Units_Sold.get(),
                         Turnover, Profitability, Physical_Volume.get(), i)
                 Modify_Command = ("Update Product_Lines SET '{}', '{}', '{}', '{}', '{}', '{}', '{}'".format(args) +
                          " WHERE ItemID = '{}'".format(i)) #how to pass a variable in a tuple
                 cursor.execute(Modify_Command)
                 sqliteConnection.commit()
-
+                cursor.close()
+                sqliteConnection.close()
             # Handle errors
             except sqlite3.Error as error:
                 print("An error occurred - ", error)
@@ -390,14 +396,16 @@ def browse_items():
                 print("Unknown Error")
                 raise CustomError("Unknown Error")    
             # clearing the contents of text entry boxes
-            ent_ItemD.delete(0, END)
-            ent_Price.delete(0, END)
-            ent_Cost_to_Make.delete(0, END)
-            ent_Cost_to_Ship.delete(0, END)
-            ent_Units_Sold.delete(0, END)
-            ent_Beginning_INV.delete(0, END)
-            ent_Ending_INV.delete(0, END)
-            del Item1
+            finally:
+                ent_Description.delete(0, END)
+                ent_Price.delete(0, END)
+                ent_Cost_to_Make.delete(0, END)
+                ent_Cost_to_Ship.delete(0, END)
+                ent_Units_Sold.delete(0, END)
+                ent_Beginning_INV.delete(0, END)
+                ent_Ending_INV.delete(0, END)
+                ent_Physical_Volume.delete(0, END)
+                del Item1
 
     #Implementing Delete button click event
     def delete(i):
@@ -408,13 +416,14 @@ def browse_items():
             sqliteConnection.commit()
     
     def back():
-        ent_ItemD.delete(0, END)
+        ent_Description.delete(0, END)
         ent_Price.delete(0, END)
         ent_Cost_to_Make.delete(0, END)
         ent_Cost_to_Ship.delete(0, END)
         ent_Units_Sold.delete(0, END)
         ent_Beginning_INV.delete(0, END)
         ent_Ending_INV.delete(0, END)
+        ent_Physical_Volume.delete(0, END)
         Add_Items_Screen.destroy
         admin
     # Fetch and output result
@@ -453,12 +462,12 @@ def browse_items():
         btnDelete = Button(Browse_Items_Screen, text = "Delete", height = "2", width = "8", command = delete(i))
         btnDelete.grid(row = i + 2, column = 2)
 
-        ent_ItemD = Entry(Browse_Items_Screen, width = "6")
-        ent_ItemD.bind()
-        ent_ItemD.grid(row = i + 2, column = 3)
-        get_ItemD = cursor.execute("SELECT ItemD FROM Product_Lines WHERE ItemID = ?", i)
-        ItemD = cursor.execute(get_ItemD)
-        ent_ItemD.insert(END, ItemD)
+        ent_Description = Entry(Browse_Items_Screen, width = "6")
+        ent_Description.bind()
+        ent_Description.grid(row = i + 2, column = 3)
+        get_Description = cursor.execute("SELECT Description FROM Product_Lines WHERE ItemID = ?", i)
+        Description = cursor.execute(get_Description)
+        ent_Description.insert(END, Description)
 
         ent_Price = Entry(Browse_Items_Screen, width = "6")
         ent_Price.bind()
