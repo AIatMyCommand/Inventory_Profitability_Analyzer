@@ -256,17 +256,19 @@ def add_items():
                 # Connect to DB and create a cursor
                 sqliteConnection = sqlite3.connect("Product_Line_Analyzer.db")
                 cursor = sqliteConnection.cursor()
-                query = "CREATE TABLE IF NOT EXISTS Product_Lines(ItemID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Description CHAR(25) NOT NULL, Price REAL NOT NULL, Units_Sold INT NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical_Volume REAL NOT NULL)"
+                query = "CREATE TABLE IF NOT EXISTS Product_Lines (ItemID INTEGER NOT NULL UNIQUE, Description TEXT NOT NULL, Price REAL NOT NULL, Units_Sold INTEGER NOT NULL, Turnover REAL NOT NULL, Profitability REAL NOT NULL, Physical_Volume REAL NOT NULL, PRIMARY KEY(ItemID AUTOINCREMENT));"
                 res = cursor.execute(query)
                 print(res)
                 Marginal_Cost = Item1.cost_to_make - Item1.cost_to_ship
                 AVG_Value_of_Item_Inventory = (Item1.beginning_INV + Item1.ending_INV)/2
                 Turnover = (Marginal_Cost/AVG_Value_of_Item_Inventory)
                 Profitability = ((Item1.price + Marginal_Cost)/Marginal_Cost)
-                args = (Item1.description, Item1.price, Marginal_Cost, Item1.units_sold,
-                        Turnover, Profitability, Item1.physical_volume)
-                cursor.execute("""INSERT INTO Product_Lines (Description, Price, Units_Sold, Turnover, Profitability, Physical_Volume)VALUES '{ }', '{ }', '{ }', '{ }', '{ }', '{ }', '{ }';""", (args))
-                #cursor.execute("""INSERT INTO Product_Lines VALUES '{}', '{}', '{}', '{}', '{}', '{}', '{}';""".format(args))
+                args = (Item1.description, Item1.price, Item1.units_sold, Turnover, Profitability, Item1.physical_volume)
+                #cursor.execute("INSERT INTO Product_Lines (Description, Price, Units_Sold, Turnover, Profitability, Physical_Volume) VALUES (" + str(Item1.description) + " " +  str(Item1.price) + " " + str(Item1.units_sold) + " " + str(Turnover) + " " + str(Profitability) + " " + str(Item1.physical_volume) + ")")
+                #cursor.execute("SHOW Product_Lines")
+                #cursor.execute("""INSERT INTO Product_Lines VALUES ('{ }', '{ }', '{ }', '{ }', '{ }', '{ }')""", (args))
+                #cursor.execute("""INSERT INTO Product_Lines (Description, Price, Units_Sold, Turnover, Profitability, Physical_Volume) VALUES '{ }', '{ }', '{ }', '{ }', '{ }', '{ }', '{ }';""", (args))
+                cursor.execute("INSERT INTO Product_Lines VALUES ('{}', '{}', '{}', '{}', '{}', '{}')", args);
                 sqliteConnection.commit()
                 print("successfully added")
                 cursor.close()
